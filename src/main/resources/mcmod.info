@@ -8,7 +8,7 @@
   "url": "https://github.com/Belgabor/ChiselsBytes",
   "updateUrl": "",
   "authorList": ["Belgabor"],
-  "credits": "AlgorithmX2 for Chisels & Bits, Sangar et al. for OpenComputers",
+  "credits": "AlgorithmX2 for Chisels & Bits, Sangar et al. for OpenComputers, Vazkii for Psi (my main code sample)",
   "logoFile": "",
   "screenshots": [],
   "dependencies": ["chiselsandbits"]

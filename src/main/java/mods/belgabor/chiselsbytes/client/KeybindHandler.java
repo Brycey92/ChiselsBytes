@@ -33,8 +33,11 @@ public class KeybindHandler {
         ClientRegistry.registerKeyBinding(keybind);
     }
 
-    private static void findRegions(String[][][] textures, String[][][] tints, List<String> regions) {
+    private static void findRegions(String[][][] textures, String[][][] tints, List<String> regions, int xdir, int ydir, int zdir, boolean state) {
         boolean[][][] handled = new boolean[16][16][16];
+        int xmin = (xdir > 0) ? 0 : 15;
+        int ymin = (ydir > 0) ? 0 : 15;
+        int zmin = (zdir > 0) ? 0 : 15;
 
         for(int x=0; x<16; x++) {
             for (int y = 0; y < 16; y++) {
@@ -46,9 +49,9 @@ public class KeybindHandler {
         }
 
 
-        for(int x=0; x<16; x++) {
-            for (int y = 0; y < 16; y++) {
-                for (int z = 0; z < 16; z++) {
+        for (int z = zmin; (z >= 0) && (z < 16); z += zdir) {
+            for (int y = ymin; (y >= 0) && (y < 16); y += ydir) {
+                for(int x = xmin; (x >= 0) && (x < 16); x += xdir) {
                     if (handled[x][y][z])
                         continue;
                     String current_texture = textures[x][y][z];
@@ -56,32 +59,36 @@ public class KeybindHandler {
                     int xend = x;
                     int yend = y;
                     int zend = z;
-                    for(int xr = x+1; xr<16; xr++) {
+                    for(int xr = x+xdir; (xr >= 0) && (xr < 16); xr += xdir) {
                         if (handled[xr][y][z])
                             break;
                         if (textures[xr][y][z].equals(current_texture) && tints[xr][y][z].equals(current_tint)) {
-                            xend += 1;
+                            xend += xdir;
                         } else {
                             break;
                         }
                     }
-                    for(int yr = y+1; yr<16; yr++) {
+                    int xfrom = Math.min(x, xend);
+                    int xto = Math.max(xend,x);
+                    for(int yr = y+ydir; (yr >= 0) && (yr < 16); yr += ydir) {
                         boolean ok = true;
-                        for(int xr = x; xr<=xend; xr++) {
+                        for(int xr = xfrom; xr<=xto; xr++) {
                             if  (handled[xr][yr][z] || (!(textures[xr][yr][z].equals(current_texture) && tints[xr][yr][z].equals(current_tint)))) {
                                 ok = false;
                                 break;
                             }
                         }
                         if (ok)
-                            yend += 1;
+                            yend += ydir;
                         else
                             break;
                     }
-                    for(int zr = z+1; zr<16; zr++) {
+                    int yfrom = Math.min(y, yend);
+                    int yto = Math.max(yend,y);
+                    for(int zr = z+zdir; (zr >= 0) && (zr < 16); zr += zdir) {
                         boolean ok = true;
-                        for(int yr = y; yr<=yend; yr++) {
-                            for(int xr = x; xr<=xend; xr++) {
+                        for(int yr = yfrom; yr<=yto; yr++) {
+                            for(int xr = xfrom; xr<=xto; xr++) {
                                 if  (handled[xr][yr][zr] || (!(textures[xr][yr][zr].equals(current_texture) && tints[xr][yr][zr].equals(current_tint)))) {
                                     ok = false;
                                     break;
@@ -91,19 +98,23 @@ public class KeybindHandler {
                                 break;
                         }
                         if (ok)
-                            zend += 1;
+                            zend += zdir;
                         else
                             break;
                     }
-                    //String res = String.format("{%02d, %02d, %02d, %02d, %02d, %02d, texture = \"%s\"", x, y, z, xend+1, yend+1, zend+1, current_texture);
-                    String res = String.format("    {%02d, %02d, %02d, %02d, %02d, %02d, texture = \"%s\"", x, y, 16-(zend+1), xend+1, yend+1, 16-z, current_texture);
+                    int zfrom = Math.min(z,zend);
+                    int zto = Math.max(zend,z);
+                    String res = String.format("    {%02d, %02d, %02d, %02d, %02d, %02d, texture = \"%s\"", xfrom, yfrom, 16-(zto+1), xto+1, yto+1, 16-zfrom, current_texture);
                     if (!current_tint.equals("FFFFFF"))
                         res += String.format(", tint = 0x%s", current_tint);
+                    if (state)
+                        res += ", state = true";
                     res += "}";
                     regions.add(res);
-                    for(int zr = z; zr<=zend; zr++) {
-                        for (int yr = y; yr <= yend; yr++) {
-                            for (int xr = x; xr <= xend; xr++) {
+                    System.out.println(res);
+                    for(int zr = zfrom; zr<=zto; zr++) {
+                        for (int yr = yfrom; yr <= yto; yr++) {
+                            for (int xr = xfrom; xr <= xto; xr++) {
                                 handled[xr][yr][zr] = true;
                             }
                         }
@@ -111,6 +122,52 @@ public class KeybindHandler {
                 }
             }
         }
+    }
+
+    private static List<String> findBest(EntityPlayer player, String[][][] textures, String[][][] tints, boolean state) {
+        ArrayList<String> results = new ArrayList<String>();
+
+        int i = 1;
+        for(int x = -1; x<=1; x+=2) {
+            for(int y = -1; y<=1; y+=2) {
+                for (int z = -1; z <= 1; z += 2) {
+                    player.addChatComponentMessage(new ChatComponentText(String.format("Testing variant %d (%d/%d/%d)...", i, x, y, z)));
+                    ArrayList<String> tresults = new ArrayList<String>();
+                    findRegions(textures, tints, tresults, x, y, z, state);
+                    player.addChatComponentMessage(new ChatComponentText(String.format("Number of shapes: %d", tresults.size())));
+                    if ((results.size() == 0) || (results.size() > tresults.size()))
+                        results = tresults;
+                    i++;
+                }
+            }
+        }
+
+        return results;
+    }
+
+    private static void examineBlock(IBitAccess bits, Minecraft mc, String[][][] textures, String[][][] tints) {
+        for(int x=0; x<16; x++) {
+            for(int y=0; y<16; y++) {
+                for(int z=0; z<16; z++) {
+                    IBlockState state = bits.getBitAt(x,y,z).getState();
+                    if (state != null) {
+                        String texture = "error";
+                        String tint = "FFFFFF";
+                        IBakedModel model = mc.getBlockRendererDispatcher().getBlockModelShapes().getModelForState(state);
+                        if (model != null && model.getParticleTexture() != null && model.getParticleTexture().getIconName() != null) {
+                            texture = model.getParticleTexture().getIconName();
+                        }
+                        Block tblock = state.getBlock();
+                        if (tblock != null) {
+                            tint = String.format("%06X", tblock.getRenderColor(state) & 0xFFFFFF);
+                        }
+                        textures[x][y][z] = texture;
+                        tints[x][y][z] = tint;
+                    }
+                }
+            }
+        }
+
     }
 
     public static void keyDown() {
@@ -127,6 +184,8 @@ public class KeybindHandler {
                     String[][][] textures = new String[16][16][16];
                     String[][][] tints = new String[16][16][16];
 
+                    examineBlock(bits, mc, textures, tints);
+                    /*
                     for(int x=0; x<16; x++) {
                         for(int y=0; y<16; y++) {
                             for(int z=0; z<16; z++) {
@@ -144,21 +203,39 @@ public class KeybindHandler {
                                     }
                                     textures[x][y][z] = texture;
                                     tints[x][y][z] = tint;
-                                    /*
-                                    result += String.format("    {%02d, %02d, %02d, %02d, %02d, %02d, texture = \"%s\"", x, y, z, x+1, y+1, z+1, texture);
-                                    if (!tint.equals("FFFFFF"))
-                                        result += String.format(", tint = 0x%s", tint);
-                                    result += "},\n";
-                                    */
                                 }
                             }
                         }
                     }
+                    */
 
-                    ArrayList<String> results = new ArrayList<String>();
-                    findRegions(textures, tints, results);
-                    player.addChatComponentMessage(new ChatComponentText(String.format("Number of shapes: %d", results.size())));
+                    List<String> results = findBest(player, textures, tints, false);
+                    int shape_count = results.size();
                     result += String.join(",\n", results);
+
+                    int shape_count_act = 0;
+                    int slot = player.inventory.currentItem;
+                    if (slot != 9) {
+                        ItemStack stack_next = player.inventory.getStackInSlot(slot + 1);
+                        if ((stack_next != null) && (ChiselsBytes.cnb_api.getItemType(stack_next) == ItemType.CHISLED_BLOCK)) {
+                            bits = ChiselsBytes.cnb_api.createBitItem(stack_next);
+                            if (bits != null) {
+                                player.addChatComponentMessage(new ChatComponentText("Assembling data for active state..."));
+                                textures = new String[16][16][16];
+                                tints = new String[16][16][16];
+
+                                examineBlock(bits, mc, textures, tints);
+                                results = findBest(player, textures, tints, true);
+                                shape_count_act = results.size();
+                                result += ",\n";
+                                result += String.join(",\n", results);
+                            }
+                        }
+                    }
+                    player.addChatComponentMessage(new ChatComponentText(String.format("Optimal number of shapes: %d", shape_count)));
+                    if (shape_count_act > 0)
+                        player.addChatComponentMessage(new ChatComponentText(String.format("Optimal number of shapes (active state): %d", shape_count_act)));
+
                     result += "\n  }\n}\n";
                     if (Desktop.isDesktopSupported()) {
 
