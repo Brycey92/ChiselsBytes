@@ -171,7 +171,11 @@ public class KeybindHandler {
                         player.addChatComponentMessage(new ChatComponentText("Error: Failed to copy to clipboard"));
                     }
                 }
+            } else {
+                player.addChatComponentMessage(new ChatComponentText("Error: You need to hold a Chisel & Bits block in your hand"));
             }
+        } else {
+            player.addChatComponentMessage(new ChatComponentText("Error: You need to hold a Chisel & Bits block in your hand"));
         }
     }
 
