@@ -5,7 +5,7 @@
   "description": "Chisels & Bytes is an addon for the Minecraft mod Chisels & Bits by AlgorithmX2. The mod allows you to export a Chisels & Bits block as a descriptive file for the OpenComputers 3d printer and works client-side only.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "https://github.com/Belgabor/ChiselsBytes",
   "updateUrl": "",
   "authorList": ["Belgabor"],
   "credits": "AlgorithmX2 for Chisels & Bits, Sangar et al. for OpenComputers",
