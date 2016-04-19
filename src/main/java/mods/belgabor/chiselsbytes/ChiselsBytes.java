@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * Created by Belgabor on 28.02.2016.
  */
 
-@Mod(modid = Constants.MOD_ID, version = Constants.VERSION, name = Constants.MOD_NAME, dependencies = "required-after:chiselsandbits")
+@Mod(modid = Constants.MOD_ID, version = Constants.VERSION, name = Constants.MOD_NAME, dependencies = "required-after:chiselsandbits", clientSideOnly = true)
 @ChiselsAndBitsAddon
 public class ChiselsBytes implements IChiselsAndBitsAddon
 {
@@ -22,7 +22,7 @@ public class ChiselsBytes implements IChiselsAndBitsAddon
     public static ChiselsBytes instance;
     public static IChiselAndBitsAPI cnb_api;
 
-    @SidedProxy(serverSide = Constants.PROXY_COMMON, clientSide = Constants.PROXY_CLIENT)
+    @SidedProxy(clientSide = Constants.PROXY_CLIENT)
     public static CommonProxy proxy;
 
     @EventHandler
