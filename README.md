@@ -14,4 +14,4 @@ If you have a Chisels & Bits block in the hotbar slot to the right of your activ
 ## Limits
 * By default the OpenComputers 3D printer only allows 24 shapes per state. The mod tries to minimize the number of shapes, but complex blocks will probably go beyond that easily. The limit can be changed in the OpenComputers configuration file (```maxShapes``` in the ```printer``` section).
 * If you port a design to 1.7.10 you will probably have to manually adjust the textures in the file. Textures are also not guaranteed to work 1.9 -> 1.8 (well, not even within 1.9 because at the time of this writing OpenComputers hasn't been ported yet)
-* [1.9] Minecraft 1.9 removed the method I used to read the color of FlatColoredBlocks blocks, so I now have to specifically code for the mod. This can break at any update to FlatColoredBlocks but should cause crashes, only missing tint specification.
+* [1.9] Minecraft 1.9 removed the method I used to read the color of FlatColoredBlocks blocks, so I now have to specifically code for the mod. This can break at any update to FlatColoredBlocks but shouldn't cause crashes, only missing tint specification.
