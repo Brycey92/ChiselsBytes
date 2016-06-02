@@ -179,7 +179,7 @@ public class KeybindHandler {
                                     params[0] = state;
                                     try {
                                         //String col = (String)(m.invoke(tblock, params));
-                                        int col = (int)(m.invoke(tblock, params));
+                                        int col = (int) (m.invoke(tblock, params));
                                         tint = String.format("%06X", col & 0xFFFFFF);
                                     }
                                     catch (InvocationTargetException ite) {}
