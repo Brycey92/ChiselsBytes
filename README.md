@@ -1,5 +1,5 @@
 # Chisels & Bytes
-Chisels &amp; Bytes is an addon for the Minecraft mod [Chisels &amp; Bits](http://mods.curse.com/mc-mods/minecraft/231095-chisels-bits) by AlgorithmX2. The mod allows you to export a Chisels & Bits block as a descriptive file for the [OpenComputers](http://mods.curse.com/mc-mods/minecraft/223008-opencomputers) 3d printer and works client-side only.
+Chisels &amp; Bytes is an addon for the Minecraft mod [Chisels &amp; Bits](http://mods.curse.com/mc-mods/minecraft/231095-chisels-bits) by AlgorithmX2. The mod allows you to export a Chisels & Bits block or designs (since v0.4) as a descriptive file for the [OpenComputers](http://mods.curse.com/mc-mods/minecraft/223008-opencomputers) 3d printer and works client-side only.
 
 There are two prominent advantages of a 3D print over the Chisels & Bits block:
 * Since the 3d printer is available in OpenComputers for Minecraft 1.7.10, this mod allows you, within limits, to port your Chisel & Bits creations back to 1.7.10.
@@ -8,10 +8,13 @@ There are two prominent advantages of a 3D print over the Chisels & Bits block:
 This mod requires Java 8.
 
 ## Usage
-After installing the mod, hold a Chisels & Bits block in your hand and (by default) press the Next/Page Up key. The script will be copied to your clipboard and can be directly pasted into the in-game OpenComputers Editor or, out of game, into your favourite text editor for adjustment. The data is formatted for use with the ```print3d``` program available via the OpenComputers package manager ```oppm```.
-If you have a Chisels & Bits block in the hotbar slot to the right of your active item, it will be used as the active state for the 3D print.
+After installing the mod, hold a Chisels & Bits block (or design since v0.4) in your hand and (by default) press the Next/Page Up key. The script will be copied to your clipboard and can be directly pasted into the in-game OpenComputers Editor or, out of game, into your favourite text editor for adjustment. The data is formatted for use with the ```print3d``` program available via the OpenComputers package manager ```oppm```.
+If you have a Chisels & Bits block in the hotbar slot to the right of your active item (or offhand since v0.4), it will be used as the active state for the 3D print.
+Version 0.4 adds limited fluid support. Sneaking toggles between using the still and flowing texture for fluid bits.
 
 ## Limits
 * By default the OpenComputers 3D printer only allows 24 shapes per state. The mod tries to minimize the number of shapes, but complex blocks will probably go beyond that easily. The limit can be changed in the OpenComputers configuration file (```maxShapes``` in the ```printer``` section).
 * If you port a design to 1.7.10 you will probably have to manually adjust the textures in the file. Textures are also not guaranteed to work 1.9 -> 1.8 (well, not even within 1.9 because at the time of this writing OpenComputers hasn't been ported yet)
-* [1.9] Minecraft 1.9 removed the method I used to read the color of FlatColoredBlocks blocks, so I now have to specifically code for the mod. This can break at any update to FlatColoredBlocks but shouldn't cause crashes, only missing tint specification.
+* [1.9+] Minecraft 1.9 removed the method I used to read the color of FlatColoredBlocks blocks, so I now have to specifically code for the mod. This can break at any update to FlatColoredBlocks but shouldn't cause crashes, only missing tint specification.
+* [v0.4] Partial fluid bit support is now available. This is limited by the capabilities of 3d prints, the fluid will not be semi-transparent and you can only use either the still or flowing texture.
+* [v0.4] Designs are now supported for export, rotation is ignored though. Negative Designs are intentionally disabled, for the purposed of this mod they hold no useful information.

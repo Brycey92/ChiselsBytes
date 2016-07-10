@@ -1,5 +1,7 @@
 package mods.belgabor.chiselsbytes.client;
 
+import com.typesafe.config.ConfigException;
+import li.cil.oc.api.API;
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.ItemType;
 import mods.belgabor.chiselsbytes.ChiselsBytes;
@@ -20,6 +22,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.input.Keyboard;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
@@ -286,6 +289,17 @@ public class KeybindHandler {
                 
                 if (hasFluids) {
                     player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.fluid" + (player.isSneaking()?"sneak":"nosneak")));
+                }
+                
+                if (Loader.isModLoaded("OpenComputers")) {
+                    int maxShapes = -1;
+                    try {
+                        maxShapes = API.config.getInt("printer.maxShapes");
+                    } catch (ConfigException e) {}
+                    if (maxShapes >= 0) {
+                        if (shape_count > maxShapes || shape_count_act > maxShapes)
+                            player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.warning.shapes", maxShapes));
+                    }
                 }
                 
                 if (Desktop.isDesktopSupported()) {
