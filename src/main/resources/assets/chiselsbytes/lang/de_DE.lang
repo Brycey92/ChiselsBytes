@@ -1,0 +1,12 @@
+chiselsbytes.keybind=Chisels & Bytes Export
+chiselsbytes.message.error.clipfail=Fehler: Daten konnen nicht in die Zwischenablage kopiert werden
+chiselsbytes.message.error.nocnb=Fehler: Gehaltenes muß ein Chisels & Bits Block oder Meißeldesign sein 
+chiselsbytes.message.info.clipsuccess=Daten wurden in die Zwischenablage kopiert
+chiselsbytes.message.info.fluidnosneak=Flüssigkeitsstückchen wurden mit der ruhenden Textur exportiert (Schleichen um mit der fließenden Textur zu exportieren)
+chiselsbytes.message.info.fluidsneak=Flüssigkeitsstückchen wurden mit der fließenden Textur exportiert (Nicht Schleichen um mit der ruhenden Textur zu exportieren)
+chiselsbytes.message.info.optimal=Optimale Formanzahl: %d
+chiselsbytes.message.info.optimalact=Optimale Formanzahl (Aktiver Zustand): %d
+chiselsbytes.message.info.shapes=Formanzahl: %d
+chiselsbytes.message.info.start=Daten werden zusammengestellt...
+chiselsbytes.message.info.startact=Daten für den aktiven Zustand werden zusammengestellt...
+chiselsbytes.message.info.variant=Teste Variante %d (%d/%d/%d)...
