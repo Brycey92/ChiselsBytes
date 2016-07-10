@@ -4,6 +4,8 @@ import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.ItemType;
 import mods.belgabor.chiselsbytes.ChiselsBytes;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDynamicLiquid;
+import net.minecraft.block.BlockStaticLiquid;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -14,6 +16,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.IFluidBlock;
 import org.lwjgl.input.Keyboard;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
@@ -37,11 +43,11 @@ public class KeybindHandler {
         ClientRegistry.registerKeyBinding(keybind);
     }
 
-    private static void findRegions(String[][][] textures, String[][][] tints, List<String> regions, int xdir, int ydir, int zdir, boolean state) {
+    private static void findRegions(String[][][] textures, String[][][] tints, List<String> regions, int xDir, int yDir, int zDir, boolean state) {
         boolean[][][] handled = new boolean[16][16][16];
-        int xmin = (xdir > 0) ? 0 : 15;
-        int ymin = (ydir > 0) ? 0 : 15;
-        int zmin = (zdir > 0) ? 0 : 15;
+        int xMin = (xDir > 0) ? 0 : 15;
+        int yMin = (yDir > 0) ? 0 : 15;
+        int zMin = (zDir > 0) ? 0 : 15;
 
         for(int x=0; x<16; x++) {
             for (int y = 0; y < 16; y++) {
@@ -53,46 +59,46 @@ public class KeybindHandler {
         }
 
 
-        for (int z = zmin; (z >= 0) && (z < 16); z += zdir) {
-            for (int y = ymin; (y >= 0) && (y < 16); y += ydir) {
-                for(int x = xmin; (x >= 0) && (x < 16); x += xdir) {
+        for (int z = zMin; (z >= 0) && (z < 16); z += zDir) {
+            for (int y = yMin; (y >= 0) && (y < 16); y += yDir) {
+                for(int x = xMin; (x >= 0) && (x < 16); x += xDir) {
                     if (handled[x][y][z])
                         continue;
                     String current_texture = textures[x][y][z];
                     String current_tint = tints[x][y][z];
-                    int xend = x;
-                    int yend = y;
-                    int zend = z;
-                    for(int xr = x+xdir; (xr >= 0) && (xr < 16); xr += xdir) {
+                    int xEnd = x;
+                    int yEnd = y;
+                    int zEnd = z;
+                    for(int xr = x+xDir; (xr >= 0) && (xr < 16); xr += xDir) {
                         if (handled[xr][y][z])
                             break;
                         if (textures[xr][y][z].equals(current_texture) && tints[xr][y][z].equals(current_tint)) {
-                            xend += xdir;
+                            xEnd += xDir;
                         } else {
                             break;
                         }
                     }
-                    int xfrom = Math.min(x, xend);
-                    int xto = Math.max(xend,x);
-                    for(int yr = y+ydir; (yr >= 0) && (yr < 16); yr += ydir) {
+                    int xFrom = Math.min(x, xEnd);
+                    int xTo = Math.max(xEnd,x);
+                    for(int yr = y+yDir; (yr >= 0) && (yr < 16); yr += yDir) {
                         boolean ok = true;
-                        for(int xr = xfrom; xr<=xto; xr++) {
+                        for(int xr = xFrom; xr<=xTo; xr++) {
                             if  (handled[xr][yr][z] || (!(textures[xr][yr][z].equals(current_texture) && tints[xr][yr][z].equals(current_tint)))) {
                                 ok = false;
                                 break;
                             }
                         }
                         if (ok)
-                            yend += ydir;
+                            yEnd += yDir;
                         else
                             break;
                     }
-                    int yfrom = Math.min(y, yend);
-                    int yto = Math.max(yend,y);
-                    for(int zr = z+zdir; (zr >= 0) && (zr < 16); zr += zdir) {
+                    int yFrom = Math.min(y, yEnd);
+                    int yTo = Math.max(yEnd,y);
+                    for(int zr = z+zDir; (zr >= 0) && (zr < 16); zr += zDir) {
                         boolean ok = true;
-                        for(int yr = yfrom; yr<=yto; yr++) {
-                            for(int xr = xfrom; xr<=xto; xr++) {
+                        for(int yr = yFrom; yr<=yTo; yr++) {
+                            for(int xr = xFrom; xr<=xTo; xr++) {
                                 if  (handled[xr][yr][zr] || (!(textures[xr][yr][zr].equals(current_texture) && tints[xr][yr][zr].equals(current_tint)))) {
                                     ok = false;
                                     break;
@@ -102,13 +108,13 @@ public class KeybindHandler {
                                 break;
                         }
                         if (ok)
-                            zend += zdir;
+                            zEnd += zDir;
                         else
                             break;
                     }
-                    int zfrom = Math.min(z,zend);
-                    int zto = Math.max(zend,z);
-                    String res = String.format("    {%02d, %02d, %02d, %02d, %02d, %02d, texture = \"%s\"", xfrom, yfrom, 16-(zto+1), xto+1, yto+1, 16-zfrom, current_texture);
+                    int zFrom = Math.min(z,zEnd);
+                    int zTo = Math.max(zEnd,z);
+                    String res = String.format("    {%02d, %02d, %02d, %02d, %02d, %02d, texture = \"%s\"", xFrom, yFrom, 16-(zTo+1), xTo+1, yTo+1, 16-zFrom, current_texture);
                     if (!current_tint.equals("FFFFFF"))
                         res += String.format(", tint = 0x%s", current_tint);
                     if (state)
@@ -116,9 +122,9 @@ public class KeybindHandler {
                     res += "}";
                     regions.add(res);
                     //System.out.println(res);
-                    for(int zr = zfrom; zr<=zto; zr++) {
-                        for (int yr = yfrom; yr <= yto; yr++) {
-                            for (int xr = xfrom; xr <= xto; xr++) {
+                    for(int zr = zFrom; zr<=zTo; zr++) {
+                        for (int yr = yFrom; yr <= yTo; yr++) {
+                            for (int xr = xFrom; xr <= xTo; xr++) {
                                 handled[xr][yr][zr] = true;
                             }
                         }
@@ -135,12 +141,12 @@ public class KeybindHandler {
         for(int x = -1; x<=1; x+=2) {
             for(int y = -1; y<=1; y+=2) {
                 for (int z = -1; z <= 1; z += 2) {
-                    player.addChatComponentMessage(new TextComponentString(String.format("Testing variant %d (%d/%d/%d)...", i, x, y, z)));
-                    ArrayList<String> tresults = new ArrayList<String>();
-                    findRegions(textures, tints, tresults, x, y, z, state);
-                    player.addChatComponentMessage(new TextComponentString(String.format("Number of shapes: %d", tresults.size())));
-                    if ((results.size() == 0) || (results.size() > tresults.size()))
-                        results = tresults;
+                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.variant", i, x, y, z));
+                    ArrayList<String> tResults = new ArrayList<String>();
+                    findRegions(textures, tints, tResults, x, y, z, state);
+                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.shapes", tResults.size()));
+                    if ((results.size() == 0) || (results.size() > tResults.size()))
+                        results = tResults;
                     i++;
                 }
             }
@@ -148,8 +154,14 @@ public class KeybindHandler {
 
         return results;
     }
+    
+    private static String colorToString(int color) {
+        return String.format("%06X", color & 0xFFFFFF);
+    }
 
-    private static void examineBlock(IBitAccess bits, Minecraft mc, String[][][] textures, String[][][] tints) {
+    @SuppressWarnings("unchecked")
+    private static boolean examineBlock(IBitAccess bits, Minecraft mc, String[][][] textures, String[][][] tints, boolean sneaking) {
+        boolean hasFluids = false;
         for(int x=0; x<16; x++) {
             for(int y=0; y<16; y++) {
                 for(int z=0; z<16; z++) {
@@ -162,12 +174,29 @@ public class KeybindHandler {
                             texture = model.getParticleTexture().getIconName();
                         }
 
-                        Block tblock = state.getBlock();
+                        Block tBlock = state.getBlock();
 
-                        if (tblock != null) {
-                            if (tblock.getClass().getCanonicalName().startsWith("mod.flatcoloredblocks.block.BlockFlatColored")) {
+                        if (tBlock != null) {
+                            Fluid fluid = null;
+                            
+                            if (tBlock instanceof IFluidBlock) {
+                                fluid = ((IFluidBlock) tBlock).getFluid();
+                            } else if (tBlock instanceof BlockStaticLiquid) {
+                                if (tBlock.getUnlocalizedName().equals("tile.water"))
+                                    fluid = FluidRegistry.getFluid("water");
+                                else if (tBlock.getUnlocalizedName().equals("tile.lava"))
+                                    fluid = FluidRegistry.getFluid("lava");
+                            }
+                            
+                            if (fluid != null) {
+                                hasFluids = true;
+                                texture = sneaking?fluid.getFlowing().toString():fluid.getStill().toString();
+                                tint = colorToString(fluid.getColor());
+                            }
+                            
+                            if (tBlock.getClass().getCanonicalName().startsWith("mod.flatcoloredblocks.block.BlockFlatColored")) {
                                 // Ugh...
-                                Class c = tblock.getClass();
+                                Class c = tBlock.getClass();
                                 Method m = null;
                                 Class pTypes[] = new Class[1];
                                 pTypes[0] = IBlockState.class;
@@ -179,8 +208,8 @@ public class KeybindHandler {
                                     params[0] = state;
                                     try {
                                         //String col = (String)(m.invoke(tblock, params));
-                                        int col = (int) (m.invoke(tblock, params));
-                                        tint = String.format("%06X", col & 0xFFFFFF);
+                                        int col = (int) (m.invoke(tBlock, params));
+                                        tint = colorToString(col);
                                     }
                                     catch (InvocationTargetException ite) {}
                                     catch (IllegalAccessException iae) {}
@@ -195,69 +224,83 @@ public class KeybindHandler {
                 }
             }
         }
-
+        return hasFluids;
+    }
+    
+    private static boolean isCompatibleItem(ItemStack stack) {
+        if (ChiselsBytes.cnb_api == null || stack == null)
+            return false;
+        ItemType type = ChiselsBytes.cnb_api.getItemType(stack);
+        return type != null && type != ItemType.NEGATIVE_DESIGN && type.isBitAccess;
     }
 
     public static void keyDown() {
         Minecraft mc = Minecraft.getMinecraft();
         EntityPlayer player = mc.thePlayer;
         ItemStack stack = player.getHeldItemMainhand();
-        if ((stack != null) && (ChiselsBytes.cnb_api != null)) {
-            if (ChiselsBytes.cnb_api.getItemType(stack) == ItemType.CHISLED_BLOCK) {
-                IBitAccess bits = ChiselsBytes.cnb_api.createBitItem(stack);
-                if (bits != null) {
-                    player.addChatComponentMessage(new TextComponentString("Assembling data..."));
-                    String result = "{\n  label=\"Converted Chisels & Bits block\",\n";
-                    result += "  shapes = {\n";
-                    String[][][] textures = new String[16][16][16];
-                    String[][][] tints = new String[16][16][16];
+        if (isCompatibleItem(stack)) {
+            IBitAccess bits = ChiselsBytes.cnb_api.createBitItem(stack);
+            if (bits != null) {
+                player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.start"));
+                String result = "{\n  label=\"Converted Chisels & Bits block\",\n";
+                result += "  shapes = {\n";
+                String[][][] textures = new String[16][16][16];
+                String[][][] tints = new String[16][16][16];
 
-                    examineBlock(bits, mc, textures, tints);
+                boolean hasFluids = examineBlock(bits, mc, textures, tints, player.isSneaking());
 
-                    List<String> results = findBest(player, textures, tints, false);
-                    int shape_count = results.size();
-                    result += String.join(",\n", results);
+                List<String> results = findBest(player, textures, tints, false);
+                int shape_count = results.size();
+                result += String.join(",\n", results);
 
-                    int shape_count_act = 0;
+                int shape_count_act = 0;
+                ItemStack stack_next = player.getHeldItemOffhand();
+                if (!isCompatibleItem(stack_next)) {
                     int slot = player.inventory.currentItem;
-                    if (slot != 9) {
-                        ItemStack stack_next = player.inventory.getStackInSlot(slot + 1);
-                        if ((stack_next != null) && (ChiselsBytes.cnb_api.getItemType(stack_next) == ItemType.CHISLED_BLOCK)) {
-                            bits = ChiselsBytes.cnb_api.createBitItem(stack_next);
-                            if (bits != null) {
-                                player.addChatComponentMessage(new TextComponentString("Assembling data for active state..."));
-                                textures = new String[16][16][16];
-                                tints = new String[16][16][16];
+                    if (slot != 9)
+                        stack_next = player.inventory.getStackInSlot(slot + 1);
+                }
+                
+                if (isCompatibleItem(stack_next)) {
+                    bits = ChiselsBytes.cnb_api.createBitItem(stack_next);
+                    if (bits != null) {
+                        player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.startact"));
+                        textures = new String[16][16][16];
+                        tints = new String[16][16][16];
 
-                                examineBlock(bits, mc, textures, tints);
-                                results = findBest(player, textures, tints, true);
-                                shape_count_act = results.size();
-                                result += ",\n";
-                                result += String.join(",\n", results);
-                            }
+                        hasFluids = examineBlock(bits, mc, textures, tints, player.isSneaking()) || hasFluids;
+                        results = findBest(player, textures, tints, true);
+                        shape_count_act = results.size();
+                        if (shape_count_act > 0) {
+                            result += ",\n";
+                            result += String.join(",\n", results);
                         }
                     }
-                    player.addChatComponentMessage(new TextComponentString(String.format("Optimal number of shapes: %d", shape_count)));
-                    if (shape_count_act > 0)
-                        player.addChatComponentMessage(new TextComponentString(String.format("Optimal number of shapes (active state): %d", shape_count_act)));
-
-                    result += "\n  }\n}\n";
-                    if (Desktop.isDesktopSupported()) {
-
-                        StringSelection sel = new StringSelection(result);
-                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                        clipboard.setContents(sel, null);
-
-                        player.addChatComponentMessage(new TextComponentString("Data copied to clipboard"));
-                    } else {
-                        player.addChatComponentMessage(new TextComponentString("Error: Failed to copy to clipboard"));
-                    }
                 }
-            } else {
-                player.addChatComponentMessage(new TextComponentString("Error: You need to hold a Chisel & Bits block in your hand"));
+                
+                player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.optimal", shape_count));
+                if (shape_count_act > 0)
+                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.optimalact", shape_count_act));
+
+                result += "\n  }\n}\n";
+                
+                if (hasFluids) {
+                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.fluid" + (player.isSneaking()?"sneak":"nosneak")));
+                }
+                
+                if (Desktop.isDesktopSupported()) {
+
+                    StringSelection sel = new StringSelection(result);
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(sel, null);
+
+                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.clipsuccess"));
+                } else {
+                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.error.clipfail"));
+                }
             }
         } else {
-            player.addChatComponentMessage(new TextComponentString("Error: You need to hold a Chisel & Bits block in your hand"));
+            player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.error.nocnb"));
         }
     }
 

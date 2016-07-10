@@ -1,0 +1,12 @@
+chiselsbytes.keybind=Chisels & Bytes Export
+chiselsbytes.message.error.clipfail=Error: Failed to copy to clipboard
+chiselsbytes.message.error.nocnb=Error: You need to hold a Chisel & Bits block or design in your hand
+chiselsbytes.message.info.clipsuccess=Data copied to clipboard
+chiselsbytes.message.info.fluidnosneak=Fluid bits have been exported with the still texture (sneak to export with flowing texture)
+chiselsbytes.message.info.fluidsneak=Fluid bits have been exported with the flowing texture (don't sneak to export with still texture)
+chiselsbytes.message.info.optimal=Optimal number of shapes: %d
+chiselsbytes.message.info.optimalact=Optimal number of shapes (active state): %d
+chiselsbytes.message.info.shapes=Number of shapes: %d
+chiselsbytes.message.info.start=Assembling data...
+chiselsbytes.message.info.startact=Assembling data for active state...
+chiselsbytes.message.info.variant=Testing variant %d (%d/%d/%d)...
