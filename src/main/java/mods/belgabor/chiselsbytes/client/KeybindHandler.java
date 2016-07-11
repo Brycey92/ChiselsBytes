@@ -163,8 +163,7 @@ public class KeybindHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private static boolean examineBlock(IBitAccess bits, Minecraft mc, String[][][] textures, String[][][] tints, boolean sneaking) {
-        boolean hasFluids = false;
+    private static void examineBlock(IBitAccess bits, Minecraft mc, String[][][] textures, String[][][] tints, Features features, boolean sneaking) {
         for(int x=0; x<16; x++) {
             for(int y=0; y<16; y++) {
                 for(int z=0; z<16; z++) {
@@ -182,6 +181,9 @@ public class KeybindHandler {
                         if (tBlock != null) {
                             Fluid fluid = null;
                             
+                            if (state.getLightValue() > features.lightLevel)
+                                features.lightLevel = state.getLightValue();
+                            
                             if (tBlock instanceof IFluidBlock) {
                                 fluid = ((IFluidBlock) tBlock).getFluid();
                             } else if (tBlock instanceof BlockStaticLiquid) {
@@ -192,7 +194,7 @@ public class KeybindHandler {
                             }
                             
                             if (fluid != null) {
-                                hasFluids = true;
+                                features.hasFluids = true;
                                 texture = sneaking?fluid.getFlowing().toString():fluid.getStill().toString();
                                 tint = colorToString(fluid.getColor());
                             }
@@ -227,7 +229,6 @@ public class KeybindHandler {
                 }
             }
         }
-        return hasFluids;
     }
     
     private static boolean isCompatibleItem(ItemStack stack) {
@@ -241,21 +242,23 @@ public class KeybindHandler {
         Minecraft mc = Minecraft.getMinecraft();
         EntityPlayer player = mc.thePlayer;
         ItemStack stack = player.getHeldItemMainhand();
+        Features features = new Features();
         if (isCompatibleItem(stack)) {
             IBitAccess bits = ChiselsBytes.cnb_api.createBitItem(stack);
             if (bits != null) {
-                player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.start"));
-                String result = "{\n  label=\"Converted Chisels & Bits block\",\n";
-                result += "  shapes = {\n";
                 String[][][] textures = new String[16][16][16];
                 String[][][] tints = new String[16][16][16];
-
-                boolean hasFluids = examineBlock(bits, mc, textures, tints, player.isSneaking());
+                
+                player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.start"));
+                String result = "{\n  label=\"Converted Chisels & Bits block\",\n";
+                
+                examineBlock(bits, mc, textures, tints, features, player.isSneaking());
 
                 List<String> results = findBest(player, textures, tints, false);
+                List<String> results_active = null;
+                
                 int shape_count = results.size();
-                result += String.join(",\n", results);
-
+                
                 int shape_count_act = 0;
                 ItemStack stack_next = player.getHeldItemOffhand();
                 if (!isCompatibleItem(stack_next)) {
@@ -271,23 +274,32 @@ public class KeybindHandler {
                         textures = new String[16][16][16];
                         tints = new String[16][16][16];
 
-                        hasFluids = examineBlock(bits, mc, textures, tints, player.isSneaking()) || hasFluids;
-                        results = findBest(player, textures, tints, true);
+                        examineBlock(bits, mc, textures, tints, features, player.isSneaking());
+                        results_active = findBest(player, textures, tints, true);
                         shape_count_act = results.size();
-                        if (shape_count_act > 0) {
-                            result += ",\n";
-                            result += String.join(",\n", results);
-                        }
                     }
                 }
+                
+                if (features.lightLevel > 0) {
+                    result += String.format("  lightLevel = %d,\n", Math.min(8, features.lightLevel));
+                    if (features.lightLevel > 8)
+                        player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.warning.light", features.lightLevel));
+                }
+
+                result += "  shapes = {\n";
+                result += String.join(",\n", results);
+                if (shape_count_act > 0) {
+                    result += ",\n";
+                    result += String.join(",\n", results_active);
+                }
+                result += "\n  }\n}\n";
                 
                 player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.optimal", shape_count));
                 if (shape_count_act > 0)
                     player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.optimalact", shape_count_act));
 
-                result += "\n  }\n}\n";
                 
-                if (hasFluids) {
+                if (features.hasFluids) {
                     player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.fluid" + (player.isSneaking()?"sneak":"nosneak")));
                 }
                 
@@ -318,4 +330,9 @@ public class KeybindHandler {
         }
     }
 
+    
+    private static class Features {
+        protected boolean hasFluids = false;
+        protected int lightLevel = 0;
+    }
 }
