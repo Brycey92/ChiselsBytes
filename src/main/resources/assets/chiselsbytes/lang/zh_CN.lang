@@ -1,1 +1,14 @@
 chiselsbytes.keybind=Chisels&Bytes 导出
+chiselsbytes.message.error.clipfail=错误：复制到剪贴板时失败
+chiselsbytes.message.error.nocnb=错误：你必须手持雕刻方块或图纸
+chiselsbytes.message.info.clipsuccess=数据已复制至剪贴板
+chiselsbytes.message.info.fluidnosneak=流体已按静止材质导出(要按流动材质导出，请进入潜行模式)
+chiselsbytes.message.info.fluidsneak=流体已按流动材质导出(要按静止材质导出，请退出潜行模式)
+chiselsbytes.message.info.optimal=最优形状数量：%d
+chiselsbytes.message.info.optimalact=最优形状数量(活动)：%d
+chiselsbytes.message.info.shapes=形状数量：%d
+chiselsbytes.message.info.start=正在整理数据...
+chiselsbytes.message.info.startact=正在整理当前数据...
+chiselsbytes.message.info.variant=测试%d (%d/%d/%d)中...
+chiselsbytes.message.warning.light=警告：当前光照等级(%d)已超过3D打印最高可允许的值(8)。为保证光照没有损失，请将其与萤石合成。(可参见example.3dm)
+chiselsbytes.message.warning.shapes=警告：当前形状数已超过单一3D打印图纸最多可包含的形状数(%d)
