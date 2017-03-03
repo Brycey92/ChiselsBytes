@@ -320,6 +320,8 @@ public class KeybindHandler {
                     }
                 }
                 */
+                if (shape_count > 24 || shape_count_act > 24)
+                    player.sendMessage(new TextComponentTranslation("chiselsbytes.message.warning.shapes", 24));
                 
                 if (Desktop.isDesktopSupported()) {
 
