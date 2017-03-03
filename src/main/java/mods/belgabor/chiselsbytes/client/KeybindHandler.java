@@ -308,8 +308,9 @@ public class KeybindHandler {
                     player.sendMessage(new TextComponentTranslation("chiselsbytes.message.info.fluid" + (player.isSneaking()?"sneak":"nosneak")));
                 }
                 
-                /* TODO: Reenable when OC becomes available
-                if (Loader.isModLoaded("OpenComputers")) {
+                // TODO: Reenable when OC becomes available
+                if (Loader.isModLoaded("opencomputers") && false) {
+                /*
                     int maxShapes = -1;
                     try {
                         maxShapes = API.config.getInt("printer.maxShapes");
@@ -318,10 +319,11 @@ public class KeybindHandler {
                         if (shape_count > maxShapes || shape_count_act > maxShapes)
                             player.sendMessage(new TextComponentTranslation("chiselsbytes.message.warning.shapes", maxShapes));
                     }
-                }
                 */
-                if (shape_count > 24 || shape_count_act > 24)
-                    player.sendMessage(new TextComponentTranslation("chiselsbytes.message.warning.shapes", 24));
+                } else {
+                    if (shape_count > 24 || shape_count_act > 24)
+                        player.sendMessage(new TextComponentTranslation("chiselsbytes.message.warning.shapes.nooc", 24));
+                }
                 
                 if (Desktop.isDesktopSupported()) {
 

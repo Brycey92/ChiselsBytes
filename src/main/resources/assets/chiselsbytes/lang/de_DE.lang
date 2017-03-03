@@ -12,3 +12,4 @@ chiselsbytes.message.info.startact=Daten für den aktiven Zustand werden zusamme
 chiselsbytes.message.info.variant=Teste Variante %d (%d/%d/%d)...
 chiselsbytes.message.warning.light=Warnung: Die Leuchtkraft (%d) übersteigt die Maximale (8) für rohe 3D-Drucke. Der Druck muss mit Glowstone gecrafted werden um die Leuchtkarft zu erhöhen (siehe example.3dm)
 chiselsbytes.message.warning.shapes=Warnung: Einer der Zustände hat mehr Formen als für ein 3D-Druck in dieser Instanz zugelassen (%d)
+chiselsbytes.message.warning.shapes.nooc=Warnung: Einer der Zustände hat mehr Formen als für ein 3D-Druck per Default zugelassen (%d)

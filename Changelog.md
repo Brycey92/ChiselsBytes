@@ -2,7 +2,7 @@
 
 ## Version 0.5
 * [Updated] to Minecraft 1.11.2
-* [Changed] The warning if OC is present and maxShapes is exceeded defaults to 24 until OC updates.
+* [Changed] The warning about exceeding maxShapes defaults to 24 when OC is absent (and until OC updates).
 
 ## Version 0.4
 * Parse light level
