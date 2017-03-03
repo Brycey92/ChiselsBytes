@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.5
+* [Updated] to Minecraft 1.11.2
+* [Removed] Warning if OC is present and maxShapes is exceeded (until OC updates)
+
 ## Version 0.4
 * Parse light level
 * Warning if OC is present and maxShapes is exceeded

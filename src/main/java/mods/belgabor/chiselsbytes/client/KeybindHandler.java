@@ -1,7 +1,9 @@
 package mods.belgabor.chiselsbytes.client;
 
 import com.typesafe.config.ConfigException;
+/*
 import li.cil.oc.api.API;
+*/
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.ItemType;
 import mods.belgabor.chiselsbytes.ChiselsBytes;
@@ -23,6 +25,8 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
@@ -38,6 +42,7 @@ import java.util.List;
 /**
  * Created by Belgabor on 28.02.2016.
  */
+@SideOnly(Side.CLIENT)
 public class KeybindHandler {
     public static KeyBinding keybind;
 
@@ -144,10 +149,10 @@ public class KeybindHandler {
         for(int x = -1; x<=1; x+=2) {
             for(int y = -1; y<=1; y+=2) {
                 for (int z = -1; z <= 1; z += 2) {
-                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.variant", i, x, y, z));
+                    player.sendMessage(new TextComponentTranslation("chiselsbytes.message.info.variant", i, x, y, z));
                     ArrayList<String> tResults = new ArrayList<String>();
                     findRegions(textures, tints, tResults, x, y, z, state);
-                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.shapes", tResults.size()));
+                    player.sendMessage(new TextComponentTranslation("chiselsbytes.message.info.shapes", tResults.size()));
                     if ((results.size() == 0) || (results.size() > tResults.size()))
                         results = tResults;
                     i++;
@@ -240,7 +245,7 @@ public class KeybindHandler {
 
     public static void keyDown() {
         Minecraft mc = Minecraft.getMinecraft();
-        EntityPlayer player = mc.thePlayer;
+        EntityPlayer player = mc.player;
         ItemStack stack = player.getHeldItemMainhand();
         Features features = new Features();
         if (isCompatibleItem(stack)) {
@@ -249,7 +254,7 @@ public class KeybindHandler {
                 String[][][] textures = new String[16][16][16];
                 String[][][] tints = new String[16][16][16];
                 
-                player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.start"));
+                player.sendMessage(new TextComponentTranslation("chiselsbytes.message.info.start"));
                 String result = "{\n  label=\"Converted Chisels & Bits block\",\n";
                 
                 examineBlock(bits, mc, textures, tints, features, player.isSneaking());
@@ -270,7 +275,7 @@ public class KeybindHandler {
                 if (isCompatibleItem(stack_next)) {
                     bits = ChiselsBytes.cnb_api.createBitItem(stack_next);
                     if (bits != null) {
-                        player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.startact"));
+                        player.sendMessage(new TextComponentTranslation("chiselsbytes.message.info.startact"));
                         textures = new String[16][16][16];
                         tints = new String[16][16][16];
 
@@ -283,7 +288,7 @@ public class KeybindHandler {
                 if (features.lightLevel > 0) {
                     result += String.format("  lightLevel = %d,\n", Math.min(8, features.lightLevel));
                     if (features.lightLevel > 8)
-                        player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.warning.light", features.lightLevel));
+                        player.sendMessage(new TextComponentTranslation("chiselsbytes.message.warning.light", features.lightLevel));
                 }
 
                 result += "  shapes = {\n";
@@ -294,15 +299,16 @@ public class KeybindHandler {
                 }
                 result += "\n  }\n}\n";
                 
-                player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.optimal", shape_count));
+                player.sendMessage(new TextComponentTranslation("chiselsbytes.message.info.optimal", shape_count));
                 if (shape_count_act > 0)
-                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.optimalact", shape_count_act));
+                    player.sendMessage(new TextComponentTranslation("chiselsbytes.message.info.optimalact", shape_count_act));
 
                 
                 if (features.hasFluids) {
-                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.fluid" + (player.isSneaking()?"sneak":"nosneak")));
+                    player.sendMessage(new TextComponentTranslation("chiselsbytes.message.info.fluid" + (player.isSneaking()?"sneak":"nosneak")));
                 }
                 
+                /* TODO: Reenable when OC becomes available
                 if (Loader.isModLoaded("OpenComputers")) {
                     int maxShapes = -1;
                     try {
@@ -310,9 +316,10 @@ public class KeybindHandler {
                     } catch (ConfigException e) {}
                     if (maxShapes >= 0) {
                         if (shape_count > maxShapes || shape_count_act > maxShapes)
-                            player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.warning.shapes", maxShapes));
+                            player.sendMessage(new TextComponentTranslation("chiselsbytes.message.warning.shapes", maxShapes));
                     }
                 }
+                */
                 
                 if (Desktop.isDesktopSupported()) {
 
@@ -320,13 +327,13 @@ public class KeybindHandler {
                     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                     clipboard.setContents(sel, null);
 
-                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.info.clipsuccess"));
+                    player.sendMessage(new TextComponentTranslation("chiselsbytes.message.info.clipsuccess"));
                 } else {
-                    player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.error.clipfail"));
+                    player.sendMessage(new TextComponentTranslation("chiselsbytes.message.error.clipfail"));
                 }
             }
         } else {
-            player.addChatComponentMessage(new TextComponentTranslation("chiselsbytes.message.error.nocnb"));
+            player.sendMessage(new TextComponentTranslation("chiselsbytes.message.error.nocnb"));
         }
     }
 
