@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.6
+* [Updated] to Minecraft 1.12.2
+
 ## Version 0.5
 * [Updated] to Minecraft 1.11.2
 * [Changed] The warning about exceeding maxShapes defaults to 24 when OC is absent (and until OC updates).
